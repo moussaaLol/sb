@@ -249,7 +249,7 @@
             }
             
             // Simple validation for the webhook URL
-            if (WEBHOOK_URL === 'https://discord.com/api/webhooks/1217812649149202442/l1bFJ8SQLZ2clVQfn40bygMrH3u_Y3JNXTpfKkQENphx4mDhtnOO4Bm6k9BZPD6FeHN9' || !WEBHOOK_URL.startsWith('http')) {
+            if (WEBHOOK_URL === '' || !WEBHOOK_URL.startsWith('http')) {
                 showSubmissionMessage(false, 'Error: Please configure a valid WEBHOOK_URL in the JavaScript code.');
                 return;
             }
