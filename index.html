@@ -1,4 +1,7 @@
-
+<!-- Chosen Palette: Indigo Minimalist (Off-white background, Indigo 600 accents) -->
+<!-- Application Structure Plan: Multi-step, card-based application form structure. The lengthy form content is broken into four thematic steps (Personal Info, Experience & Skills, Motivation & Commitment, Finalization). This structure improves user flow, reduces cognitive load, and maximizes conversion rate, especially on mobile devices. Navigation is handled by simple JS functions (next/back). -->
+<!-- Visualization & Content Choices: Progress Tracker (HTML/CSS/JS) to show completion status (Goal: Inform -> Viz/Presentation Method: Progress Bar -> Interaction: Automatic update on step change -> Justification: Provides visual feedback and encourages completion -> Library/Method: HTML/CSS/JS). No complex data charts are necessary. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -249,10 +252,53 @@
             }
             
             // Simple validation for the webhook URL
-            if (WEBHOOK_URL === '' || !WEBHOOK_URL.startsWith('http')) {
+            if (WEBHOOK_URL === 'YOUR_WEBHOOK_URL_HERE' || !WEBHOOK_URL.startsWith('http')) {
                 showSubmissionMessage(false, 'Error: Please configure a valid WEBHOOK_URL in the JavaScript code.');
                 return;
             }
+
+            // --- START: Discord Webhook Formatting Fix (Addresses 400 error) ---
+            
+            // Helper function to truncate text nicely for embed fields
+            const truncate = (text, maxLength) => text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
+            
+            const fields = [
+                // Personal Info
+                { name: '👤 Applicant', value: `**Name:** ${data.fullName}\n**Nickname:** ${data.nickname || 'N/A'}\n**Age:** ${data.age}\n**Timezone:** ${data.timezone}`, inline: true },
+                { name: '📧 Contact & Position', value: `**Email:** ${data.email}\n**Desired Position:** ${data.primaryPosition}`, inline: true },
+                
+                // Commitment & Expectations
+                { name: '🕒 Time Commitment', value: `**Hours/Week:** ${data.timeAvailability}\n**Expectations:** ${truncate(data.expectations, 100)}`, inline: false },
+                
+                // Motivation
+                { name: '💡 Why Our Site?', value: truncate(data.whyWebsite, 1024), inline: false }, // Embed field limit is 1024
+                
+                // Experience
+                { name: '📜 Prior Experience', value: truncate(data.priorExperience, 1024), inline: false },
+                
+                // Technical Skills & Conflict Scenario
+                { name: '🛠️ Technical Skills', value: truncate(data.technicalSkills, 500), inline: true },
+                { name: '⚖️ Conflict Management', value: truncate(data.conflictManagement, 500), inline: true },
+
+                // Final Links
+                { name: '🔗 Portfolio', value: data.portfolio || 'N/A', inline: false },
+                { name: '🔗 Social Profiles', value: data.socialProfiles || 'N/A', inline: false },
+                { name: '📝 References', value: truncate(data.references || 'None provided', 500), inline: false }
+            ];
+
+            const webhookPayload = {
+                // This content message ensures the 400 error is avoided and provides a notification
+                content: `🚨 **New Staff Application Submitted!** (${data.primaryPosition})`,
+                embeds: [{
+                    title: `Application from: ${data.fullName}`,
+                    description: `**Desired Role:** ${data.primaryPosition}`,
+                    color: 3878250, // Indigo color
+                    fields: fields,
+                    footer: { text: `Application Received at ${new Date().toLocaleString()}` }
+                }]
+            };
+            // --- END: Discord Webhook Formatting Fix ---
+
 
             // UI Feedback during submission
             submitButton.disabled = true;
@@ -261,16 +307,20 @@
             submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
 
             try {
+                // Send the Discord-compatible payload
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(webhookPayload)
                 });
 
                 if (response.ok) {
+                    // We still pass the original 'data' to showSubmissionMessage for the summary
                     showSubmissionMessage(true, data);
                 } else {
-                    showSubmissionMessage(false, `HTTP Error ${response.status}`);
+                    // If Discord returns 400 or another error, we catch it here
+                    const errorText = await response.text();
+                    showSubmissionMessage(false, `HTTP Error ${response.status}. Response: ${errorText.substring(0, 100)}...`);
                 }
             } catch (error) {
                 showSubmissionMessage(false, `Network Error: ${error.message}`);
@@ -302,6 +352,8 @@
                 const summaryDiv = document.getElementById('submission-summary');
                 let summaryHtml = '<h3 class="font-bold text-gray-700 mb-2">Application Summary:</h3><ul class="list-disc pl-5 space-y-1">';
                 for (const key in details) {
+                    // Skip the declaration check box from the summary list for cleaner output
+                    if(key === 'declarationCheck') continue; 
                     let label = key.replace(/([A-Z])/g, ' $1').trim().replace('Check', 'Confirmation');
                     label = label.charAt(0).toUpperCase() + label.slice(1);
                     summaryHtml += `<li><span class="font-medium">${label}</span>: ${details[key]}</li>`;
