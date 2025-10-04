@@ -1,0 +1,343 @@
+<!-- Chosen Palette: Indigo Minimalist (Off-white background, Indigo 600 accents) -->
+<!-- Application Structure Plan: Multi-step, card-based application form structure. The lengthy form content is broken into four thematic steps (Personal Info, Experience & Skills, Motivation & Commitment, Finalization). This structure improves user flow, reduces cognitive load, and maximizes conversion rate, especially on mobile devices. Navigation is handled by simple JS functions (next/back). -->
+<!-- Visualization & Content Choices: Progress Tracker (HTML/CSS/JS) to show completion status (Goal: Inform -> Viz/Presentation Method: Progress Bar -> Interaction: Automatic update on step change -> Justification: Provides visual feedback and encourages completion -> Library/Method: HTML/CSS/JS). No complex data charts are necessary. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Application - Interactive Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 50px; 
+            max-height: 50px; 
+        }
+        .step-content {
+            display: none;
+        }
+        .step-active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-xl p-6 sm:p-10 border border-gray-100">
+
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-indigo-700 sm:text-4xl">Staff Team Application Form</h1>
+            <p class="mt-2 text-gray-600">Welcome! We are excited about your interest in joining our team. Please complete the 4 steps below.</p>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="chart-container mb-8">
+            <div id="progress-bar-container" class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-xs mt-2 text-gray-500">
+                <span>Step 1/4</span>
+                <span>Completed</span>
+            </div>
+        </div>
+
+        <form id="application-form">
+            <!-- Step 1: Personal Information -->
+            <div id="step-1" class="step-content step-active">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">1. Personal Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="full-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name (Required)</label>
+                        <input type="text" id="full-name" name="fullName" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address (Required)</label>
+                        <input type="email" id="email" name="email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="nickname" class="block text-sm font-medium text-gray-700 mb-1">Current Username/Nickname (Optional)</label>
+                        <input type="text" id="nickname" name="nickname" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age (Required)</label>
+                        <input type="number" id="age" name="age" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="timezone" class="block text-sm font-medium text-gray-700 mb-1">Time Zone (E.g.: GMT+1, PST) (Required)</label>
+                        <input type="text" id="timezone" name="timezone" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div class="flex justify-end mt-8">
+                    <button type="button" onclick="nextStep()" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150">Next Step &rarr;</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Experience and Technical Skills -->
+            <div id="step-2" class="step-content">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">2. Experience and Skills (Crucial)</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label for="primary-position" class="block text-sm font-medium text-gray-700 mb-1">Desired Primary Position</label>
+                        <input type="text" id="primary-position" name="primaryPosition" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="E.g.: Content Writer, Moderator">
+                    </div>
+                    <div>
+                        <label for="prior-experience" class="block text-sm font-medium text-gray-700 mb-1">3.1 Prior Experience (Min 50 words)</label>
+                        <textarea id="prior-experience" name="priorExperience" rows="4" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Describe your quantifiable achievements."></textarea>
+                    </div>
+                    <div>
+                        <label for="technical-skills" class="block text-sm font-medium text-gray-700 mb-1">3.2 Technical Skills and Software</label>
+                        <textarea id="technical-skills" name="technicalSkills" rows="3" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Detailed list (HTML/CSS, Figma, CMS, Moderation Tools, etc.)"></textarea>
+                    </div>
+                    <div>
+                        <label for="conflict-management" class="block text-sm font-medium text-gray-700 mb-1">3.3 Conflict or Task Management (Scenario)</label>
+                        <textarea id="conflict-management" name="conflictManagement" rows="4" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Describe the situation, your approach, and the outcome."></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="prevStep()" class="px-6 py-3 text-indigo-600 border border-indigo-600 font-semibold rounded-lg hover:bg-indigo-50 transition duration-150">&larr; Previous</button>
+                    <button type="button" onclick="nextStep()" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150">Next Step &rarr;</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Motivation and Commitment -->
+            <div id="step-3" class="step-content">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">3. Motivation and Commitment</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label for="why-website" class="block text-sm font-medium text-gray-700 mb-1">4.1 Why our website? (Min 50 words)</label>
+                        <textarea id="why-website" name="whyWebsite" rows="4" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="What attracts you and what unique value do you bring?"></textarea>
+                    </div>
+                    <div>
+                        <label for="time-availability" class="block text-sm font-medium text-gray-700 mb-1">4.2 Time Availability (Hours/Week)</label>
+                        <input type="number" id="time-availability" name="timeAvailability" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="E.g.: 8">
+                        <p class="mt-1 text-xs text-gray-500">Please be realistic about your weekly commitment.</p>
+                    </div>
+                    <div>
+                        <label for="expectations" class="block text-sm font-medium text-gray-700 mb-1">4.3 Your Expectations</label>
+                        <textarea id="expectations" name="expectations" rows="3" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="E.g.: Build my portfolio, Learn new skills"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="prevStep()" class="px-6 py-3 text-indigo-600 border border-indigo-600 font-semibold rounded-lg hover:bg-indigo-50 transition duration-150">&larr; Previous</button>
+                    <button type="button" onclick="nextStep()" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150">Next Step &rarr;</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Finalization and Declaration -->
+            <div id="step-4" class="step-content">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">4. Finalization and Declaration</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label for="portfolio" class="block text-sm font-medium text-gray-700 mb-1">Your Portfolio (GitHub, Behance, personal site, etc.)</label>
+                        <input type="url" id="portfolio" name="portfolio" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Link(s)">
+                    </div>
+                    <div>
+                        <label for="social-profiles" class="block text-sm font-medium text-gray-700 mb-1">Social/Professional Profiles (LinkedIn, X, etc.)</label>
+                        <input type="url" id="social-profiles" name="socialProfiles" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Link(s)">
+                    </div>
+                    <div>
+                        <label for="references" class="block text-sm font-medium text-gray-700 mb-1">References (Optional - Name, Role, Contact)</label>
+                        <textarea id="references" name="references" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Reference information"></textarea>
+                    </div>
+                    
+                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="text-sm font-semibold text-yellow-800 mb-2">Application Declaration</p>
+                        <p class="text-sm text-gray-700">I certify that the information provided in this form is accurate and complete. I understand that any intentional lie or omission may result in the rejection of my application or the termination of my future collaboration.</p>
+                        <div class="flex items-center mt-3">
+                            <input type="checkbox" id="declaration-check" name="declarationCheck" required class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="declaration-check" class="ml-2 block text-sm font-medium text-gray-700">I confirm the above declaration.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="prevStep()" class="px-6 py-3 text-indigo-600 border border-indigo-600 font-semibold rounded-lg hover:bg-indigo-50 transition duration-150">&larr; Previous</button>
+                    <button type="submit" id="submit-button" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition duration-150 transform hover:scale-105">Submit Application</button>
+                </div>
+            </div>
+
+             <!-- Submission Messages (Initially hidden) -->
+            <div id="message-container" class="hidden text-center p-10 rounded-xl">
+                <!-- Success Message -->
+                <div id="submission-success" class="hidden bg-green-50">
+                    <p class="text-3xl text-green-700 mb-4">&#10003;</p>
+                    <h2 class="text-2xl font-bold text-green-800">Application Submitted Successfully!</h2>
+                    <p class="text-gray-600 mt-2">Thank you for your interest and time. We will review your application and contact you soon via the provided email address.</p>
+                    <p id="submission-summary" class="mt-4 text-sm text-gray-500 text-left"></p>
+                </div>
+                <!-- Error Message -->
+                <div id="submission-error" class="hidden bg-red-50">
+                    <p class="text-3xl text-red-700 mb-4">&#9888;</p>
+                    <h2 class="text-2xl font-bold text-red-800">Submission Failed</h2>
+                    <p class="text-gray-600 mt-2">There was an error sending your application. Please try again or contact support. <span id="error-details" class="font-mono text-red-600"></span></p>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    <script>
+        const WEBHOOK_URL = 'YOUR_WEBHOOK_URL_HERE'; // *** IMPORTANT: REPLACE WITH YOUR ACTUAL WEBHOOK URL ***
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            const progressBarContainer = document.getElementById('progress-bar-container').nextElementSibling;
+            progressBarContainer.querySelector('span:first-child').textContent = `Step ${currentStep}/${totalSteps}`;
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.classList.remove('step-active');
+            });
+            document.getElementById(`step-${step}`).classList.add('step-active');
+            currentStep = step;
+            updateProgress();
+        }
+
+        function validateCurrentStep() {
+            const currentDiv = document.getElementById(`step-${currentStep}`);
+            let isValid = true;
+            currentDiv.querySelectorAll('[required]').forEach(input => {
+                if (!input.value.trim() || (input.type === 'checkbox' && !input.checked)) {
+                    input.classList.add('border-red-500');
+                    isValid = false;
+                } else {
+                    input.classList.remove('border-red-500');
+                }
+            });
+            return isValid;
+        }
+
+        function nextStep() {
+            if (!validateCurrentStep()) {
+                alertUser('Please fill in all required fields before proceeding.');
+                return;
+            }
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            if (!validateCurrentStep()) return;
+
+            const form = e.target;
+            const submitButton = document.getElementById('submit-button');
+            const originalButtonText = submitButton.textContent;
+            
+            // Collect Form Data
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Simple validation for the webhook URL
+            if (WEBHOOK_URL === 'https://discord.com/api/webhooks/1217812649149202442/l1bFJ8SQLZ2clVQfn40bygMrH3u_Y3JNXTpfKkQENphx4mDhtnOO4Bm6k9BZPD6FeHN9' || !WEBHOOK_URL.startsWith('http')) {
+                showSubmissionMessage(false, 'Error: Please configure a valid WEBHOOK_URL in the JavaScript code.');
+                return;
+            }
+
+            // UI Feedback during submission
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            submitButton.classList.remove('bg-green-600', 'hover:bg-green-700');
+            submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showSubmissionMessage(true, data);
+                } else {
+                    showSubmissionMessage(false, `HTTP Error ${response.status}`);
+                }
+            } catch (error) {
+                showSubmissionMessage(false, `Network Error: ${error.message}`);
+            } finally {
+                // Restore button state (only if we didn't succeed, success hides the form)
+                if (form.classList.contains('hidden')) return;
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+                submitButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                submitButton.classList.add('bg-green-600', 'hover:bg-green-700');
+            }
+        }
+
+        function showSubmissionMessage(success, details) {
+            const form = document.getElementById('application-form');
+            const container = document.getElementById('message-container');
+            const successDiv = document.getElementById('submission-success');
+            const errorDiv = document.getElementById('submission-error');
+            
+            form.classList.add('hidden');
+            container.classList.remove('hidden');
+            successDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            
+            if (success) {
+                successDiv.classList.remove('hidden');
+                
+                // Generate summary for success message
+                const summaryDiv = document.getElementById('submission-summary');
+                let summaryHtml = '<h3 class="font-bold text-gray-700 mb-2">Application Summary:</h3><ul class="list-disc pl-5 space-y-1">';
+                for (const key in details) {
+                    let label = key.replace(/([A-Z])/g, ' $1').trim().replace('Check', 'Confirmation');
+                    label = label.charAt(0).toUpperCase() + label.slice(1);
+                    summaryHtml += `<li><span class="font-medium">${label}</span>: ${details[key]}</li>`;
+                }
+                summaryHtml += '</ul>';
+                summaryDiv.innerHTML = summaryHtml;
+
+            } else {
+                errorDiv.classList.remove('hidden');
+                document.getElementById('error-details').textContent = details;
+                // Re-enable the form if submission failed
+                form.classList.remove('hidden');
+                container.classList.add('hidden'); 
+                // Show a temporary error alert as well
+                alertUser(`Submission failed: ${details}`);
+            }
+        }
+
+        document.getElementById('application-form').addEventListener('submit', handleSubmit);
+
+
+        function alertUser(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-xl transition-opacity duration-300 z-50';
+            alertDiv.textContent = message;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.classList.add('opacity-0');
+                alertDiv.addEventListener('transitionend', () => alertDiv.remove());
+            }, 3000);
+        }
+
+        showStep(1);
+    </script>
+</body>
+</html>
